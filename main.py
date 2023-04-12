@@ -106,7 +106,11 @@ utterances = {
                     "Go to a new directory",
                     "I want to see the directory",
                     "I want to see the folder",
-                    "I want to go to the"],
+                    "I want to go to the"
+                    "Navigate to the folder",
+                    "Navigate",
+                    "Take me to the folder",
+                    "Take me to"],
                     
             # 'EDIT':["I want to edit a file",
             #         "Edit file",
@@ -230,7 +234,7 @@ class Conch():
             self.lineedit.setText(old_command)
     
     def update_console(self):
-        self.console.appendPlainText("{} - Test".format(datetime.datetime.now().strftime('%m/%d/%Y-%H:%M:%S')))
+        #self.console.appendPlainText("{} - Test".format(datetime.datetime.now().strftime('%m/%d/%Y-%H:%M:%S')))
 
         if self.lineedit.text() == '':
             recorded_audio = record_audio(int(self.timeedit.text()))
@@ -246,10 +250,11 @@ class Conch():
         self.command_distance += 1
         self.command_index = self.command_distance
 
-        self.console.appendPlainText("Transcription: {}".format(transcription))
+        #self.console.appendPlainText("Transcription: {}".format(transcription))
         detectedIntent = detectIntent(transcription, utterances, list(utterances.keys()))
 
-        self.console.appendPlainText("Detected Intent: {}".format(detectedIntent))
+        #self.console.appendPlainText("Detected Intent: {}".format(detectedIntent))
+        self.console.appendPlainText("{} - Transcription: {} - Detected Intent: {}".format(datetime.datetime.now().strftime('%m/%d/%Y-%H:%M:%S'), transcription, detectedIntent))
 
         print('detected intent: ', detectedIntent)
         if detectedIntent == 'MOVE_FILE':
@@ -263,13 +268,13 @@ class Conch():
             if len(res) == 0:
                 filename = 'temp.txt'
             else:
-                filename = res[0]
+                filename = res[0].lower()
             create_file(self.path, self.filestructure, filename)
             
         elif detectedIntent == 'CREATE_FOLDER':
             # I NEED TO FIGURE OUT HOW TO GET THE DIRECTORY FROM ASR
             new_dir = detect_slot(transcription, "What is the name of the folder the user wants to go to?")['answer']
-            new_dir = ''.join(new_dir.split())
+            new_dir = ''.join(new_dir.split()).lower()
             create_folder(self.path, self.filestructure, new_dir)
 
         elif detectedIntent == 'DELETE_FILE':
@@ -299,7 +304,7 @@ class Conch():
             else:
                 # I NEED TO FIGURE OUT HOW TO GET THE DIRECTORY FROM ASR
                 new_dir = detect_slot(transcription, "What is the name of the folder the user wants to go to?")['answer']
-                new_dir = ''.join(new_dir.split())
+                new_dir = ''.join(new_dir.split()).lower()
                 self.path = change_path(new_dir, self.path, self.filestructure)
             self.console.appendPlainText("PATH: {}".format('/'.join(self.path.split())))
 
